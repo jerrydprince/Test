@@ -113,6 +113,7 @@ BEGIN
   DELETE FROM public.duty_reports WHERE true;
   DELETE FROM public.notification_logs WHERE true;
   DELETE FROM public.system_logs WHERE true;
+  DELETE FROM public.lost_found_items WHERE true;
   -- DELETE FROM public.audit_logs WHERE true; -- Table may not exist yet
 END;
 $$;
