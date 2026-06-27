@@ -328,13 +328,7 @@ const AdminAccounting = () => {
         });
       } else {
         // Mock seed customer inflows if empty or query failed
-        resolvedInflows = [
-          { id: 'inflow-1', date: format(new Date(2026, 4, 2), 'yyyy-MM-dd'), amount: 150000, description: 'Guest Booking Payment - John Doe', method: 'bank_transfer', status: 'completed', type: 'inflow', category: 'Booking Revenue' },
-          { id: 'inflow-2', date: format(new Date(2026, 4, 5), 'yyyy-MM-dd'), amount: 280000, description: 'Guest Booking Payment - Jane Smith', method: 'paystack', status: 'completed', type: 'inflow', category: 'Booking Revenue' },
-          { id: 'inflow-3', date: format(new Date(2026, 4, 11), 'yyyy-MM-dd'), amount: 95000, description: 'Guest Booking Payment - David Kalu', method: 'cash', status: 'completed', type: 'inflow', category: 'Booking Revenue' },
-          { id: 'inflow-4', date: format(new Date(2026, 4, 14), 'yyyy-MM-dd'), amount: 340000, description: 'Guest Booking Payment - Sarah Connor', method: 'pos', status: 'completed', type: 'inflow', category: 'Booking Revenue' },
-          { id: 'inflow-5', date: format(new Date(2026, 4, 20), 'yyyy-MM-dd'), amount: 180000, description: 'Guest Booking Payment - Michael Cole', method: 'paystack', status: 'completed', type: 'inflow', category: 'Booking Revenue' }
-        ];
+        resolvedInflows = [];
       }
 
       // Append folio POS charges as separate inflows mapped under category 'POS Revenue'!
@@ -397,10 +391,10 @@ const AdminAccounting = () => {
       const { data: salData, error: salErr } = await supabase.from('staff_salaries').select('*').order('created_at', { ascending: false });
 
       if (expErr || salErr) {
-        // Tables missing! PGRST205 / remote error. Trigger local storage fallback.
-        console.warn("Accounting tables missing or inaccessible, falling back to LocalStorage.");
-        setIsUsingFallback(true);
-        loadLocalStorageData(resolvedProperties, resolvedStaff);
+        console.warn("Accounting tables missing or inaccessible. expErr:", expErr, "salErr:", salErr);
+        setIsUsingFallback(false);
+        setExpenses(expData || []);
+        setSalaries(salData || []);
       } else {
         setIsUsingFallback(false);
         setExpenses(expData || []);
@@ -412,8 +406,9 @@ const AdminAccounting = () => {
 
     } catch (err) {
       console.error("Critical error fetching accounting data:", err);
-      setIsUsingFallback(true);
-      loadLocalStorageData([{ id: 'mock-hq', name: 'Luxe Headquarters', base_currency: 'NGN' }], []);
+      setIsUsingFallback(false);
+      setExpenses([]);
+      setSalaries([]);
     } finally {
       setLoading(false);
     }

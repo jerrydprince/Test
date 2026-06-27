@@ -113,7 +113,7 @@ BEGIN
   DELETE FROM public.duty_reports WHERE true;
   DELETE FROM public.notification_logs WHERE true;
   DELETE FROM public.system_logs WHERE true;
-  DELETE FROM public.audit_logs WHERE true;
+  -- DELETE FROM public.audit_logs WHERE true; -- Table may not exist yet
 END;
 $$;
 
@@ -165,6 +165,6 @@ BEGIN
   PERFORM public.reset_guest_directory_data(caller_id);
   
   -- Reset room statuses back to clean & available
-  UPDATE public.rooms SET status = 'available', housekeeping_status = 'clean';
+  UPDATE public.rooms SET status = 'available' WHERE true;
 END;
 $$;
